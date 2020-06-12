@@ -1,7 +1,5 @@
 from flask import Flask
 from flask import jsonify
-import json
-import requests
 import csv
 app=Flask(__name__)
 
