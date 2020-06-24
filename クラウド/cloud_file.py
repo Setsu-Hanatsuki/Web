@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import Response
 import json
 import requests
 import cgi
@@ -10,32 +11,52 @@ app=Flask(__name__)
 
 @app.route('/')
 def home():
-    form='<form name="form1" method="POST" action="result" enctype="multipart/form-data">'
+    form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
     #form=form+'<input type="text" name="user">'
-    form=form+'<input type="file" name="files">'
-    form=form+'<input type="submit" value="送信">'
+    form=form+'<input type="file" name="files">\n'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
+    form=form+'<form name="form1" method="POST" action="result2">\n'
+    form=form+'<input type="text" name="name">'
+    form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>'
     return form
 
-@app.route('/result',methods=['POST','GET'])
-def result():
-    try:
-        #user=request.form["user"]        
+@app.route('/result1',methods=['POST','GET'])
+def result1():
+    try:       
         item=request.files["files"]
+        print(item)
         item.save(item.filename)
     except:
         a=1
     output=""
-    #print(glob.glob("/"+user+"/*"))
-    #fold="/"+user+"/"
     for path in glob.glob("*"):
-        output=output+"<a href=\"http://localhost:5000/file/"+path+">"+path+"</a><br>\n"
+        output=output+"<a href=\"http://localhost:5000/file/"+path+"\">"+path+"</a><br>\n"
+    return output
+
+@app.route('/result2',methods=['POST','GET'])
+def result2():
+    try:       
+        name=request.form["name"]
+        print(name)
+        cont=request.form["cont"]
+        print(cont)
+        with open(name+".txt", mode='w',encoding="utf-8") as f:
+            f.write(cont)
+            f.close
+        
+    except:
+        a=1
+    output=""
+    for path in glob.glob("*"):
+        output=output+"<a href=\"http://localhost:5000/file/"+path+"\">"+path+"</a><br>\n"
     return output
 
 @app.route('/file/<name>')
 def FILE(name):
-    f=open("/"+user+"/"+name,"r")
+    f=open(name,"r")
     s=f.read()
-    resp=flask.Response(s)
+    resp=Response(s)
     return resp
     
 if __name__=='__main__':
