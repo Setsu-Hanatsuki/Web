@@ -12,7 +12,6 @@ app=Flask(__name__)
 @app.route('/')
 def home():
     form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
-    #form=form+'<input type="text" name="user">'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
     form=form+'<form name="form1" method="POST" action="result2">\n'
@@ -25,7 +24,6 @@ def home():
 def result1():
     try:       
         item=request.files["files"]
-        print(item)
         item.save(item.filename)
     except:
         a=1
@@ -38,13 +36,10 @@ def result1():
 def result2():
     try:       
         name=request.form["name"]
-        print(name)
         cont=request.form["cont"]
-        print(cont)
         with open(name+".txt", mode='w',encoding="utf-8") as f:
             f.write(cont)
             f.close
-        
     except:
         a=1
     output=""
