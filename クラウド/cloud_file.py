@@ -2,6 +2,7 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import Response
+from flask import send_file
 import json
 import requests
 import cgi
@@ -18,41 +19,59 @@ def home():
     form=form+'<input type="text" name="name">'
     form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>'
+    
     return form
 
 @app.route('/result1',methods=['POST','GET'])
 def result1():
-    try:       
+    try:        
         item=request.files["files"]
+        print(item)
         item.save(item.filename)
     except:
         a=1
     output=""
     for path in glob.glob("*"):
         output=output+"<a href=\"http://localhost:5000/file/"+path+"\">"+path+"</a><br>\n"
+    form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
+    form=form+'<input type="file" name="files">\n'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
+    form=form+'<form name="form1" method="POST" action="result2">\n'
+    form=form+'<input type="text" name="name">'
+    form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>'
+    output=form+output
     return output
 
 @app.route('/result2',methods=['POST','GET'])
 def result2():
     try:       
         name=request.form["name"]
+        print(name)
         cont=request.form["cont"]
-        with open(name+".txt", mode='w',encoding="utf-8") as f:
+        print(cont)
+        with open(name, mode='w',encoding="utf-8") as f:
             f.write(cont)
             f.close
+        
     except:
         a=1
     output=""
     for path in glob.glob("*"):
         output=output+"<a href=\"http://localhost:5000/file/"+path+"\">"+path+"</a><br>\n"
+    form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
+    form=form+'<input type="file" name="files">\n'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
+    form=form+'<form name="form1" method="POST" action="result2">\n'
+    form=form+'<input type="text" name="name">'
+    form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>'
+    output=form+output
     return output
 
 @app.route('/file/<name>')
 def FILE(name):
-    f=open(name,"r")
-    s=f.read()
-    resp=Response(s)
-    return resp
+    return send_file(name)
     
 if __name__=='__main__':
     app.run(host='0.0.0.0')
