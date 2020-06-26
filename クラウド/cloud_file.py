@@ -15,7 +15,7 @@ def home():
     form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
-    form=form+'<form name="form1" method="POST" action="result2">\n'
+    form=form+'<form name="form1" method="POST" action="result1">\n'
     form=form+'<input type="text" name="name">'
     form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>'
@@ -30,21 +30,6 @@ def result1():
         item.save(item.filename)
     except:
         a=1
-    output=""
-    for path in glob.glob("*"):
-        output=output+"<a href=\"http://localhost:5000/file/"+path+"\">"+path+"</a><br>\n"
-    form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
-    form=form+'<input type="file" name="files">\n'
-    form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
-    form=form+'<form name="form1" method="POST" action="result2">\n'
-    form=form+'<input type="text" name="name">'
-    form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
-    form=form+'<input type="submit" value="送信">\n</form>\n<br>'
-    output=form+output
-    return output
-
-@app.route('/result2',methods=['POST','GET'])
-def result2():
     try:       
         name=request.form["name"]
         print(name)
@@ -53,7 +38,6 @@ def result2():
         with open(name, mode='w',encoding="utf-8") as f:
             f.write(cont)
             f.close
-        
     except:
         a=1
     output=""
@@ -62,7 +46,7 @@ def result2():
     form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
-    form=form+'<form name="form1" method="POST" action="result2">\n'
+    form=form+'<form name="form1" method="POST" action="result1">\n'
     form=form+'<input type="text" name="name">'
     form=form+'<textarea name="cont" rows="4" cols="40"></textarea>'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>'
