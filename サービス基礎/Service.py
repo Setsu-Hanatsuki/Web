@@ -13,11 +13,8 @@ def HOMT():
     out=""
     tmp="a"
     for row in reader:
-        #if row[5]==city:
-        #jsn[row[3]]=row[0]
         if tmp!=row[1]:
             out=out+'<a href="http://localhost:5000/state/'+row[4]+'">'+row[1]+"</a><br>\n"
-            #print(row[0])
             tmp=row[1]
     return out
 
@@ -29,7 +26,6 @@ def CITY(city):
     out="<table>\n"
     for row in reader:
         if row[5]==city:
-            #jsn[row[3]]=row[0]
             out=out+"<tr><td>"+row[3]+"</td><td>"+row[0]+"</td></tr>\n"
     out=out+"</table>"
     return out
@@ -47,7 +43,6 @@ def STATE(state):
                 out=out+'<a href="http://localhost:5000/city/'+row[5]+'">'+row[2]+"</a><br>\n"
                 tmp=row[2]
     return out
-    
-    
+
 if __name__=='__main__':
     app.run(host='0.0.0.0')
