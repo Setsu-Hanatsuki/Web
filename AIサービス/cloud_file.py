@@ -17,7 +17,8 @@ import sqlite3
 import os,glob
 import csv
 import subprocess
-app=Flask(__name__,static_url_path='/static')
+#app=Flask(__name__,static_url_path='/static')
+app=Flask(__name__)
 def rcsv(file):
     f=open(file,"r")
     reader=csv.reader(f)
@@ -174,4 +175,4 @@ def result3():
     return render_template("index.html")
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',port=80)
