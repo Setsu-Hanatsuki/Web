@@ -45,11 +45,11 @@ def rcsv(file):
 def graph(file):
     x,y,name=rcsv(file)
     x = preprocessing.minmax_scale(x)
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(max_depth=10)
     clf.fit(x, y)
     for i in range(len(y)):
         y[i]=str(y[i])
-    export_graphviz(clf, "tree1.1.dot",feature_names=name)
+    export_graphviz(clf, "tree1.1.dot",feature_names=name,class_names=y)
     subprocess.run("dot -Tpng tree1.1.dot -o static/images/graph.png".split())
     a=1
     return a
@@ -70,7 +70,27 @@ def rf(file):
     return out
     
 def reg(file):
-    x,y,name=rcsv(file)
+    f=open(file,"r")
+    reader=csv.reader(f)
+    k=0
+    name=[]
+    tmp=[]
+    x=[]
+    y=[]
+    for row in reader:
+        if k==0:
+            for j in range(len(row)):
+                if j!=0:
+                    name.append(row[j])
+            k=1
+        else:
+            for i in range(len(row)):
+                if i!=0:
+                    tmp.append(float(row[i]))
+                else:
+                    y.append(float(row[i]))
+            x.append(tmp)
+            tmp=[]
     reg = linear_model.LinearRegression()
     reg.fit(x, y)
     x=np.array(x)
