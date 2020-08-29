@@ -140,6 +140,9 @@ def home():
     form=form+'<h2>CHAID分析</h2><br>\n<form name="form1" method="POST" action="result3" enctype="multipart/form-data">\n'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
+    form=form+'<h2>数量化</h2><br>\n<form name="form1" method="POST" action="result4" enctype="multipart/form-data">\n'
+    form=form+'<h3>項目</h3><input type="text" name="content"><br><input type="file" name="files">\n'
+    form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
     return form
 
 @app.route('/result1',methods=['POST','GET'])
@@ -187,9 +190,39 @@ def result3():
     except:
         a=1
     file=item.filename
-    
     a=graph(file)
     return render_template("index.html",time=dt_now)
+
+@app.route('/result4',methods=['POST','GET'])
+def result4():
+    import pandas as pd
+    try:        
+        item=request.files["files"]
+        content=request.form["content"]
+        print(item)
+        item.save(item.filename)
+    except:
+        a=1
+    df=pd.read_csv(item.filename,encoding="shift-jis")
+    con=content.split()
+    x=pd.get_dummies(df[con])
+    df=pd.concat([df,x],axis=1,join='inner')
+    #df.drop(df.index[[0]])
+    for i in range(len(con)):
+        df=df.drop(con[i],axis=1)
+    df.to_csv(item.filename,encoding="shift-jis",index=False)
+    with open(item.filename,"r")as f:
+        a=f.read()
+        f.close()
+    a=a.strip('\"')
+    with open("fix"+item.filename,"w")as f:
+        f.write(a)
+        f.close()
+    return '<a href="http://localhost:5000/file/'+item.filename+'">Download</a>'
+    
+@app.route("/file/<name>")
+def file(name):
+    return send_file(name)
 
 if __name__=='__main__':
     app.run(host='0.0.0.0')
