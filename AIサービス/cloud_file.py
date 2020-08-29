@@ -45,14 +45,24 @@ def rcsv(file):
     
 def graph(file):
     x,y,name=rcsv(file)
-    x = preprocessing.minmax_scale(x)
+    #x = preprocessing.minmax_scale(x)
     clf = DecisionTreeClassifier(max_depth=10)
     clf.fit(x, y)
+    cn={}
     for i in range(len(y)):
         y[i]=str(y[i])
-    export_graphviz(clf, "tree1.1.dot",feature_names=name,class_names=y)
-    subprocess.run("dot -Tpng tree1.1.dot -o static/images/graph.png".split())
+        try:
+            a=cn[y[i]]
+        except:
+            cn[y[i]]=1
+    class_names=[]
+    for key in cn:
+        class_names.append(key)
+    export_graphviz(clf, "tree1.1.dot",feature_names=name,class_names=class_names,filled=True,proportion=True)
+    
+    subprocess.run("dot -Tpng tree1.1.dot -o static/images/graph1.png".split())
     a=1
+    
     return a
     
 def rf(file):
@@ -121,13 +131,13 @@ def reg(file):
 
 @app.route('/')
 def home():
-    form='<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
+    form='<h1>要因分析</h1><br>\n<h2>目的変数が連続的な場合の重要度</h2><br>\n<form name="form1" method="POST" action="result1" enctype="multipart/form-data">\n'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
-    form=form+'<form name="form1" method="POST" action="result2" enctype="multipart/form-data">\n'
+    form=form+'<h2>目的変数がカテゴリの場合の重要度</h2><br>\n<form name="form1" method="POST" action="result2" enctype="multipart/form-data">\n'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
-    form=form+'<form name="form1" method="POST" action="result3" enctype="multipart/form-data">\n'
+    form=form+'<h2>CHAID分析</h2><br>\n<form name="form1" method="POST" action="result3" enctype="multipart/form-data">\n'
     form=form+'<input type="file" name="files">\n'
     form=form+'<input type="submit" value="送信">\n</form>\n<br>\n'
     return form
@@ -142,9 +152,13 @@ def result1():
         a=1
     file=item.filename
     out=reg(file)
-    output="<table>\n<tr><td>項目</td><td>ウェイト</td></tr>\n"
+    print(out)
+    output="<table>\n<tr><td>項目</td><td>ウェイト</td><td>重要度</td></tr>\n"
     for i in range(len(out)):
-        output=output+"<tr><td>"+str(out[i][0])+"</td><td>"+str(out[i][1])+"</td></tr>\n"
+        if i<len(out)-2:
+            output=output+"<tr><td>"+str(out[i][0])+"</td><td>"+str(out[i][1])+"</td><td>"+str(out[i][2])+"</td></tr>\n"
+        else:
+            output=output+"<tr><td>"+str(out[i][0])+"</td><td>"+str(out[i][1])+"</td></tr>\n"
     return output
 
 @app.route('/result2',methods=['POST','GET'])
@@ -164,6 +178,8 @@ def result2():
 
 @app.route('/result3',methods=['POST','GET'])
 def result3():
+    import datetime
+    dt_now = datetime.datetime.now()
     try:        
         item=request.files["files"]
         print(item)
@@ -171,8 +187,9 @@ def result3():
     except:
         a=1
     file=item.filename
+    
     a=graph(file)
-    return render_template("index.html")
+    return render_template("index.html",time=dt_now)
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0',port=80)
+    app.run(host='0.0.0.0')
